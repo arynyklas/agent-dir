@@ -88,6 +88,8 @@ EOF
 )"
 ```
 
+> If user platform is Windows, use `--body "$(type nul && cat <<'EOF'` instead of `--body "$(cat <<'EOF'` to avoid issues with newlines in the description.
+
 **Title format** follows commit conventions:
 - `feat(scope): Add new feature`
 - `fix(scope): Fix the bug`
