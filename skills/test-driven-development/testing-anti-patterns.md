@@ -225,7 +225,31 @@ BEFORE creating mock responses:
   If uncertain: Include all documented fields
 ```
 
-## Anti-Pattern 5: Integration Tests as Afterthought
+## Anti-Pattern 5: Implementation-Coupled Tests
+
+**The violation:** testing private methods, call order, or internal helpers when a public seam exists.
+
+**Why this is wrong:** the test locks the implementation shape instead of the observable contract. Refactors break tests even when behavior is unchanged.
+
+**The fix:** agree on the public seam first and test behavior through that seam. If no seam exists, design the seam before implementation.
+
+## Anti-Pattern 6: Tautological Expected Values
+
+**The violation:** computing the expected value with the same implementation, helper, query, or fixture transformation being tested.
+
+**Why this is wrong:** the test repeats the bug. Expected values must come from requirements, examples, invariants, or independent reasoning.
+
+**The fix:** write explicit expected values for small cases and derive larger cases from documented invariants.
+
+## Anti-Pattern 7: Horizontal TDD Batches
+
+**The violation:** writing all tests first, then all implementation.
+
+**Why this is wrong:** feedback arrives too late; wrong seams and tautological expectations compound across the batch.
+
+**The fix:** one vertical tracer-bullet cycle at a time: one RED test through the public seam, minimal GREEN implementation, then repeat.
+
+## Anti-Pattern 8: Integration Tests as Afterthought
 
 **The violation:**
 ```
@@ -279,6 +303,9 @@ TDD cycle:
 | Mock without understanding | Understand dependencies first, mock minimally |
 | Incomplete mocks | Mirror real API completely |
 | Tests as afterthought | TDD - tests first |
+| Implementation-coupled tests | Test observable behavior through the public seam |
+| Tautological expected values | Use contract examples or independent expected values |
+| Horizontal TDD batches | One vertical tracer-bullet cycle at a time |
 | Over-complex mocks | Consider integration tests |
 
 ## Red Flags

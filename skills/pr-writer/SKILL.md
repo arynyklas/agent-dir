@@ -1,185 +1,89 @@
 ---
 name: pr-writer
-description: ALWAYS use this skill when creating or updating pull requests — never create or edit a PR directly without it. Follows Sentry conventions for PR titles, descriptions, and issue references. Trigger on any create PR, open PR, submit PR, make PR,...
+description: Use when the user asks to create, open, submit, or update a pull request.
 ---
 
 # PR Writer
 
-Create pull requests following Sentry's engineering practices.
+Create or update GitHub pull requests using repository conventions and the Oh My Pi `github` tool surface.
 
-**Requires**: GitHub CLI (`gh`) authenticated and available.
+**Dependency:** If requested PR contents include uncommitted changes, invoke `commit` first. Do not create a PR from an uncommitted working tree.
 
-## Prerequisites
+## Inputs to collect
 
-Before creating a PR, ensure all changes are committed. If there are uncommitted changes, run the `skill:commit` skill first to commit them properly.
+- Current branch and intended base branch.
+- Commit range and diff that will enter the PR.
+- Existing issue, ticket, spec, or plan references supplied by context.
+- Repository PR template, if one exists.
+- Verification already run for the change.
+- Whether the user explicitly wants ready-for-review. If not, create a draft.
 
-```bash
-# Check for uncommitted changes
-git status --porcelain
-```
+## Analyze before writing
 
-If the output shows any uncommitted changes (modified, added, or untracked files that should be included), invoke the `skill:commit` skill before proceeding.
+1. Confirm the branch is not the base branch.
+2. Confirm all intended changes are committed.
+3. Review the commits and diff for scope.
+4. Identify the PR title from the primary commit or repository convention.
+5. Read repository PR templates such as `.github/pull_request_template.md`, `.github/PULL_REQUEST_TEMPLATE.md`, or files under `.github/PULL_REQUEST_TEMPLATE/` when present.
 
-## Process
+## Body rules
 
-### Step 1: Verify Branch State
+### If a repository template exists
 
-```bash
-# Detect the default branch — note the output for use in subsequent commands
-gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'
-```
+Follow it. Keep required headings, checklists, and sections, including any `Test Plan` section. Fill only what the change can support with evidence. Do not delete a template section just because a global workflow prefers a different shape.
 
-```bash
-# Check current branch and status (substitute the detected branch name above for BASE)
-git status
-git log BASE..HEAD --oneline
-```
+### If no template exists
 
-Ensure:
-- All changes are committed
-- Branch is up to date with remote
-- Changes are rebased on the base branch if needed
-
-### Step 2: Analyze Changes
-
-Review what will be included in the PR:
-
-```bash
-# See all commits that will be in the PR (substitute detected branch name for BASE)
-git log BASE..HEAD
-
-# See the full diff
-git diff BASE...HEAD
-```
-
-Understand the scope and purpose of all changes before writing the description.
-
-### Step 3: Write the PR Description
-
-Use this structure for PR descriptions (ignoring any repository PR templates):
+Use this order exactly, omitting empty sections:
 
 ```markdown
-<brief description of what the PR does>
+## What changed
 
-<why these changes are being made - the motivation>
+## Why
 
-<alternative approaches considered, if any>
+## Verification
 
-<any additional context reviewers need>
+## Risks / reviewer notes
+
+## Issue links
 ```
 
-**Do NOT include:**
-- "Test plan" sections
-- Checkbox lists of testing steps
-- Redundant summaries of the diff
+Guidance:
 
-**Do include:**
-- Clear explanation of what and why
-- Links to relevant issues or tickets
-- Context that isn't obvious from the code
-- Notes on specific areas that need careful review
+- `What changed`: concrete behavior or files affected, not a copied diff.
+- `Why`: user problem, bug, requirement, or maintenance reason.
+- `Verification`: exact commands, smoke checks, browser/manual scenarios, or `Not run` with a reason when no verification was applicable.
+- `Risks / reviewer notes`: migration risk, compatibility notes, follow-up reviewer attention, or none if empty.
+- `Issue links`: `Fixes #123`, `Refs #123`, or external tracker keys only when context supplies them.
 
-### Step 4: Create the PR
+## Create a PR
 
-```bash
-gh pr create --draft --title "<type>(<scope>): <description>" --body "$(cat <<'EOF'
-<description body here>
-EOF
-)"
+Use the harness GitHub operation, not shell heredocs:
+
+```text
+github op: pr_create
 ```
 
-> If user platform is Windows, use `--body "$(type nul && cat <<'EOF'` instead of `--body "$(cat <<'EOF'` to avoid issues with newlines in the description.
+Set:
 
-**Title format** follows commit conventions:
-- `feat(scope): Add new feature`
-- `fix(scope): Fix the bug`
-- `ref: Refactor something`
+- `title`: repository-conventional PR title;
+- `body`: the completed template/body;
+- `base`: detected or requested base branch;
+- `head`: current branch when needed;
+- `draft`: `true` unless the user asks for ready-for-review.
 
-## PR Description Examples
+Do not push, merge, or mutate trackers unless the user requested that separate action.
 
-### Feature PR
+## Update an existing PR
 
-```markdown
-Add Slack thread replies for alert notifications
+The `github` wrapper has PR creation but no edit operation. For existing PR title/body updates only, use one focused `gh api -X PATCH repos/{owner}/{repo}/pulls/{number}` call. Do not combine unrelated label, reviewer, branch, or issue mutations into that PATCH.
 
-When an alert is updated or resolved, we now post a reply to the original
-Slack thread instead of creating a new message. This keeps related
-notifications grouped and reduces channel noise.
+## Review before submitting
 
-Previously considered posting edits to the original message, but threading
-better preserves the timeline of events and works when the original message
-is older than Slack's edit window.
+Before creating or updating:
 
-Refs SENTRY-1234
-```
-
-### Bug Fix PR
-
-```markdown
-Handle null response in user API endpoint
-
-The user endpoint could return null for soft-deleted accounts, causing
-dashboard crashes when accessing user properties. This adds a null check
-and returns a proper 404 response.
-
-Found while investigating SENTRY-5678.
-
-Fixes SENTRY-5678
-```
-
-### Refactor PR
-
-```markdown
-Extract validation logic to shared module
-
-Moves duplicate validation code from the alerts, issues, and projects
-endpoints into a shared validator class. No behavior change.
-
-This prepares for adding new validation rules in SENTRY-9999 without
-duplicating logic across endpoints.
-```
-
-## Issue References
-
-Reference issues in the PR body:
-
-| Syntax | Effect |
-|--------|--------|
-| `Fixes #1234` | Closes GitHub issue on merge |
-| `Fixes SENTRY-1234` | Closes Sentry issue |
-| `Refs GH-1234` | Links without closing |
-| `Refs LINEAR-ABC-123` | Links Linear issue |
-
-## Guidelines
-
-- **One PR per feature/fix** - Don't bundle unrelated changes
-- **Keep PRs reviewable** - Smaller PRs get faster, better reviews
-- **Explain the why** - Code shows what; description explains why
-- **Mark WIP early** - Use draft PRs for early feedback
-
-## Editing Existing PRs
-
-If you need to update a PR after creation, use `gh api` instead of `gh pr edit`:
-
-```bash
-# Update PR description
-gh api -X PATCH repos/{owner}/{repo}/pulls/PR_NUMBER -f body="$(cat <<'EOF'
-Updated description here
-EOF
-)"
-
-# Update PR title
-gh api -X PATCH repos/{owner}/{repo}/pulls/PR_NUMBER -f title='new: Title here'
-
-# Update both
-gh api -X PATCH repos/{owner}/{repo}/pulls/PR_NUMBER \
-  -f title='new: Title' \
-  -f body='New description'
-```
-
-Note: `gh pr edit` is currently broken due to GitHub's Projects (classic) deprecation.
-
-## References
-
-- [Sentry Code Review Guidelines](https://develop.sentry.dev/engineering-practices/code-review/)
-- [Sentry Commit Messages](https://develop.sentry.dev/engineering-practices/commit-messages/)
+- Body follows repository template or fallback section order.
+- Verification evidence is specific and current.
+- Draft/ready state matches the user request.
+- Issue links are supplied by context, not invented.
+- No AI attribution or generated-by markers are added unless repository/user policy requires them.

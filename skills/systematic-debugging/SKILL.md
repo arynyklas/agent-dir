@@ -49,6 +49,8 @@ You MUST complete each phase before proceeding to the next.
 
 ### Phase 1: Root Cause Investigation
 
+**First deliverable:** build one fast, deterministic, agent-runnable command that can go red on the reported symptom. It may be a focused test, one-off script, reproduction command, or smoke command. Minimize it until it proves the smallest observed failure before forming theories.
+
 **BEFORE attempting ANY fix:**
 
 1. **Read Error Messages Carefully**
@@ -61,7 +63,8 @@ You MUST complete each phase before proceeding to the next.
    - Can you trigger it reliably?
    - What are the exact steps?
    - Does it happen every time?
-   - If not reproducible → gather more data, don't guess
+   - Minimize before theory: remove every step, dependency, and variable not needed to make the symptom appear
+   - If not reproducible → build instrumentation around one variable at a time; gather more data, don't guess
 
 3. **Check Recent Changes**
    - What changed that could cause this?
@@ -146,19 +149,21 @@ You MUST complete each phase before proceeding to the next.
 
 **Scientific method:**
 
-1. **Form Single Hypothesis**
-   - State clearly: "I think X is the root cause because Y"
-   - Write it down
+1. **Record 3-5 Ranked Hypotheses**
+   - State each clearly: "I think X is the root cause because Y"
+   - Rank by likelihood and ease of falsification
+   - Each hypothesis must be falsifiable by one probe
    - Be specific, not vague
 
-2. **Test Minimally**
-   - Make the SMALLEST possible change to test hypothesis
-   - One variable at a time
+2. **Probe One Variable**
+   - Instrument or change the SMALLEST possible thing to test the top hypothesis
+   - One variable per probe
    - Don't fix multiple things at once
 
 3. **Verify Before Continuing**
-   - Did it work? Yes → Phase 4
-   - Didn't work? Form NEW hypothesis
+   - Did the probe confirm root cause? Yes → Phase 4
+   - Did it falsify the hypothesis? Cross it off and test the next ranked hypothesis
+   - Inconclusive? Improve the reproducer/instrumentation before changing code
    - DON'T add more fixes on top
 
 4. **When You Don't Know**
@@ -247,6 +252,8 @@ If you catch yourself thinking:
 | Excuse | Reality |
 |--------|---------|
 | "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
+| "I know the likely cause before reproducing" | Hypothesis before signal is guessing. Build the red-capable command first. |
+| "One hypothesis is enough" | Ranked hypotheses beat tunnel vision. Write 3-5 and falsify one variable at a time. |
 | "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
 | "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
 | "I'll write test after confirming fix works" | Untested fixes don't stick. Test first proves it. |
@@ -259,7 +266,7 @@ If you catch yourself thinking:
 
 | Phase | Key Activities | Success Criteria |
 |-------|---------------|------------------|
-| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
+| **1. Root Cause** | Build red-capable command, read errors, minimize reproduction, gather evidence | Deterministic symptom command and evidence |
 | **2. Pattern** | Find working examples, compare | Identify differences |
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
 | **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |

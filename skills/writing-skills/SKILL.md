@@ -19,6 +19,8 @@ You write test cases (pressure scenarios with subagents), watch them fail (basel
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 
+**Design reference:** During initial design and refactoring, read [design-principles.md](design-principles.md). It defines predictability, context load vs cognitive load, information hierarchy, context pointers/progressive disclosure, completion criteria, co-location, leading words, and pruning rules. Skill-TDD remains authoritative: design principles shape the documentation after RED baseline behavior is known.
+
 ## What is a Skill?
 
 A **skill** is a reference guide for proven techniques, patterns, or tools. Skills help future agents find and apply effective approaches.
@@ -564,13 +566,13 @@ This is "watch the test fail" - you must see what agents naturally do before wri
 
 ### GREEN: Write Minimal Skill
 
-Write skill that addresses those specific rationalizations. Don't add extra content for hypothetical cases.
+Read [design-principles.md](design-principles.md), then write skill guidance that addresses those specific rationalizations. Don't add extra content for hypothetical cases.
 
 Run same scenarios WITH skill. Agent should now comply.
 
 ### REFACTOR: Close Loopholes
 
-Agent found new rationalization? Add explicit counter. Re-test until bulletproof.
+Read [design-principles.md](design-principles.md) before refactoring wording. Agent found new rationalization? Add explicit counter. Re-test until bulletproof.
 
 ### Micro-Test Wording Before Full Scenarios
 

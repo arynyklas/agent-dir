@@ -1,107 +1,73 @@
 ---
 name: create-branch
-description: Create a git branch following Sentry naming conventions. Use when asked to "create a branch", "new branch", "start a branch", "make a branch", "switch to a new branch", or when starting new work on the default branch.
+description: Use when the user asks to create, start, switch to, or name a Git branch, or when a commit workflow must leave the default branch.
 argument-hint: '[optional description of the work]'
 ---
 
 # Create Branch
 
-Create a git branch with the correct type prefix and a descriptive name following Sentry conventions.
+Create a Git branch named `<type>/<short-description>` using the repository's convention when one is documented, otherwise the neutral convention below.
 
-## Step 1: Get the Username Prefix
+## Branch contract
 
-Run `gh api user --jq .login` to get the GitHub username.
+`<type>` is one of:
 
-If the command fails (e.g. not authenticated), ask the user for their preferred prefix.
+| Type | Use when |
+|---|---|
+| `feat` | New user-facing functionality |
+| `fix` | Broken behavior now works |
+| `ref` | Same behavior, different structure |
+| `chore` | Maintenance for existing tooling, dependencies, or config |
+| `perf` | Same behavior, faster |
+| `style` | Formatting or visual-only changes |
+| `docs` | Documentation only |
+| `test` | Tests only |
+| `ci` | CI/CD config |
+| `build` | Build system |
+| `meta` | Repository metadata |
+| `license` | License changes |
 
-## Step 2: Determine the Branch Description
+`<short-description>` rules:
 
-**If `$ARGUMENTS` is provided**, use it as the description of the work.
+- Lowercase ASCII kebab-case.
+- 3-6 words.
+- Describe the change, not file names.
+- Use only ASCII letters, digits, and hyphens.
 
-**If no arguments**, check for local changes:
+Examples:
 
-```bash
-git diff
-git diff --cached
-git status --short
-```
+| Work | Branch |
+|---|---|
+| Dropdown menu not closing on outside click | `fix/dropdown-not-closing-outside` |
+| Add search to conversation page | `feat/add-conversation-search` |
+| Simplify drawer components | `ref/simplify-drawer-components` |
+| Update test fixtures | `chore/update-test-fixtures` |
+| Add license notice | `license/add-mit-notice` |
 
-- **Changes exist**: read the diff content to understand what the work is about and generate a description.
-- **No changes**: ask the user what they are about to work on.
+## Workflow
 
-## Step 3: Classify the Type
+1. **Read repository instructions first.** If local instructions define a branch convention, use it instead of the neutral type list above.
+2. **Inspect current state without mutating it.** Determine:
+   - current branch;
+   - default branch from the remote HEAD or local `main`/`master` fallback;
+   - whether HEAD is detached;
+   - whether the current branch is non-default;
+   - whether uncommitted changes exist;
+   - whether the proposed name already exists locally or remotely.
+3. **Choose the description.** Use the user-provided argument when present. Otherwise infer only from the requested work. Inspecting uncommitted diffs is allowed for naming, but do not assume every dirty file belongs to the requested branch.
+4. **Classify the type.** Prefer the repository convention. Otherwise use the table above; when unsure, use `feat` for new behavior, `fix` for broken behavior, `ref` for structural-only changes, and `chore` for maintenance of something existing.
+5. **Propose before mutating.** Show the proposed branch name and base branch/commit. Create nothing until the user approves both.
+6. **Ask only when the answer changes the result.** Ask if:
+   - HEAD is detached and the branch could be based on either the current commit or the default branch;
+   - the current branch is not the default branch and the branch could be based on either current or default;
+   - uncommitted work must be preserved, moved, stashed, or left behind;
+   - the proposed branch name conflicts locally or remotely.
+7. **Create after approval.** Create the approved branch from the approved base, preserving unrelated uncommitted work according to the user's selected handling.
 
-Pick the type from this table based on the description:
+## Safety rules
 
-| Type      | Use when                                                              |
-| --------- | --------------------------------------------------------------------- |
-| `feat`    | New user-facing functionality                                         |
-| `fix`     | Broken behavior now works                                             |
-| `ref`     | Same behavior, different structure                                    |
-| `chore`   | Deps, config, version bumps, updating existing tooling — no new logic |
-| `perf`    | Same behavior, faster                                                 |
-| `style`   | CSS, formatting, visual-only                                          |
-| `docs`    | Documentation only                                                    |
-| `test`    | Tests only                                                            |
-| `ci`      | CI/CD config                                                          |
-| `build`   | Build system                                                          |
-| `meta`    | Repo metadata changes                                                 |
-| `license` | License changes                                                       |
-
-When unsure: `feat` for new things (including new scripts, skills, or tools), `ref` for restructuring existing things, `chore` only when updating/maintaining something that already exists.
-
-## Step 4: Generate and Propose
-
-Build the branch name as `<type>/<short-description>`.
-
-Rules for `<short-description>`:
-
-- Kebab-case, lowercase
-- 3 to 6 words, concise but clear
-- Describe the change, not file names
-- Only use ASCII letters, digits, and hyphens — no spaces, dots, colons, tildes, or other git-forbidden characters
-
-Present it to the user and ask if they want to use it, modify it, or change the type.
-
-### Examples
-
-| Work description                           | Branch name                                 |
-| ------------------------------------------ | ------------------------------------------- |
-| Dropdown menu not closing on outside click | `fix/dropdown-not-closing-on-blur` |
-| Adding search to conversations page        | `feat/add-search-to-conversations` |
-| Restructuring drawer components            | `ref/simplify-drawer-components`   |
-| Updating test fixtures                     | `chore/update-test-fixtures`       |
-| Bumping @sentry/react to latest version    | `chore/bump-sentry-react`          |
-| Adding a new agent skill                   | `feat/add-create-branch-skill`     |
-
-## Step 5: Create the Branch
-
-Once confirmed, detect the current and default branch:
-
-```bash
-git branch --show-current
-git remote | grep -qx origin && echo origin || git remote | head -1
-git symbolic-ref refs/remotes/<remote>/HEAD 2>/dev/null | sed 's|refs/remotes/<remote>/||' | tr -d '[:space:]'
-```
-
-If `symbolic-ref` fails, fall back to `git branch --list main master`: use the one that exists; if both or neither exist, ask the user.
-
-If `git branch --show-current` is empty (detached HEAD), show the current commit (`git rev-parse --short HEAD`) and ask whether to branch from it or switch to the default branch first.
-
-Otherwise, if the current branch is not the default branch, warn the user and ask whether to branch from the current branch or switch to the default branch first.
-
-If the user wants to switch to the default branch, handle any uncommitted changes appropriately (offer to stash them if present), then run `git checkout <default-branch>`. On any failure, restore stashed changes if applicable and stop.
-
-Before creating the branch, check that the name doesn't already exist locally or on the remote (`git show-ref`). If it does, ask the user to choose a different name.
-
-Create the branch:
-
-```bash
-git checkout -b <branch-name>
-```
-
-Restore any stashed changes after the branch is created.
-
-## References
-
-- [Sentry Branch Naming](https://develop.sentry.dev/sdk/getting-started/standards/code-submission/#branch-naming)
+- Do not create a branch from a detached HEAD without explicit approval of that commit as the base.
+- Do not silently switch away from a non-default branch.
+- Do not stash, reset, discard, or move uncommitted changes without approval.
+- Do not overwrite an existing local or remote branch name.
+- If a repository has no discoverable default branch, ask for the base instead of guessing.

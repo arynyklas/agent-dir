@@ -5,99 +5,93 @@ description: Use when completing tasks, implementing major features, or before m
 
 # Requesting Code Review
 
-Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
+Run review along two independent axes: **Standards** and **Spec**. Keep their findings separate so documented-rule violations do not mask requirement gaps, and requirement gaps do not get hidden behind style or quality feedback.
 
-**Core principle:** Review early, review often.
+## When to request review
 
-## When to Request Review
+Mandatory:
 
-**Mandatory:**
-- After each task in subagent-driven development
-- After completing major feature
-- Before merge to main
+- After each task in subagent-driven development.
+- After completing a major feature.
+- Before merging to the mainline branch.
 
-**Optional but valuable:**
-- When stuck (fresh perspective)
-- Before refactoring (baseline check)
-- After fixing complex bug
+Useful:
 
-## How to Request
+- When stuck and needing a fresh read.
+- Before risky refactoring.
+- After a complex bug fix.
 
-**1. Get git SHAs:**
-```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
-HEAD_SHA=$(git rev-parse HEAD)
+## Inputs
+
+- Exact diff range or review package path.
+- Repository standards files: instructions, style guides, test rules, architecture docs, PR templates, or local agent instructions.
+- Originating issue, plan, spec, ticket, or requirements. If none exists, record `No spec available`.
+- Verification evidence already run by the implementer.
+
+## Dispatch
+
+Use one `task` batch so independent reviewers run in parallel.
+
+### Standards reviewer
+
+Read-only. Give it:
+
+- the exact diff range or review package;
+- repository standards files;
+- verification evidence.
+
+Ask for:
+
+- violations of documented rules, with file/line evidence;
+- judgment-call smells clearly labelled as judgment calls;
+- severity inside the Standards axis only.
+
+### Spec reviewer
+
+Skip this reviewer only when no issue, plan, spec, ticket, or requirement exists. In that case, write `No spec available` under the Spec heading.
+
+When a spec exists, give it:
+
+- the same exact diff range or review package;
+- the originating issue/plan/spec/ticket/requirements;
+- verification evidence.
+
+Ask for:
+
+- missing requirements;
+- incorrect behavior;
+- scope creep;
+- source quotations from the spec for every finding;
+- severity inside the Spec axis only.
+
+## Aggregate
+
+Do not rerank findings across axes. Preserve the two reports under these headings:
+
+```markdown
+## Standards
+
+[Standards reviewer findings]
+
+Finding count: N
+Worst finding: [severity + one-line summary, or None]
+
+## Spec
+
+[Spec reviewer findings, or No spec available]
+
+Finding count: N
+Worst finding: [severity + one-line summary, or None]
 ```
 
-**2. Dispatch code reviewer subagent:**
+If either reviewer reports Critical or Important findings, fix them before proceeding. If a reviewer cannot verify a requirement from the diff, resolve that item yourself using the broader plan/context before marking review complete.
 
-Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md](code-reviewer.md)
+## Act on feedback
 
-**Placeholders:**
-- `{DESCRIPTION}` - Brief summary of what you built
-- `{PLAN_OR_REQUIREMENTS}` - What it should do
-- `{BASE_SHA}` - Starting commit
-- `{HEAD_SHA}` - Ending commit
+- Fix Critical issues immediately.
+- Fix Important issues before continuing.
+- Track Minor findings explicitly if not fixed now.
+- Push back only with code, tests, or source quotations proving the finding is wrong.
+- If a finding conflicts with the plan text, ask which governs before changing code.
 
-**3. Act on feedback:**
-- Fix Critical issues immediately
-- Fix Important issues before proceeding
-- Note Minor issues for later
-- Push back if reviewer is wrong (with reasoning)
-
-## Example
-
-```
-[Just completed Task 2: Add verification function]
-
-You: Let me request code review before proceeding.
-
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
-HEAD_SHA=$(git rev-parse HEAD)
-
-[Dispatch code reviewer subagent]
-  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
-  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
-  BASE_SHA: a7981ec
-  HEAD_SHA: 3df7661
-
-[Subagent returns]:
-  Strengths: Clean architecture, real tests
-  Issues:
-    Important: Missing progress indicators
-    Minor: Magic number (100) for reporting interval
-  Assessment: Ready to proceed
-
-You: [Fix progress indicators]
-[Continue to Task 3]
-```
-
-## Integration with Workflows
-
-**Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
-
-**Executing Plans:**
-- Review after each task or at natural checkpoints
-- Get feedback, apply, continue
-
-**Ad-Hoc Development:**
-- Review before merge
-- Review when stuck
-
-## Red Flags
-
-**Never:**
-- Skip review because "it's simple"
-- Ignore Critical issues
-- Proceed with unfixed Important issues
-- Argue with valid technical feedback
-
-**If reviewer wrong:**
-- Push back with technical reasoning
-- Show code/tests that prove it works
-- Request clarification
-
-See template at: [code-reviewer.md](code-reviewer.md)
+See [code-reviewer.md](code-reviewer.md) for reviewer prompt templates.
