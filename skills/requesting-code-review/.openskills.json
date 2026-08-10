@@ -2,6 +2,9 @@
   "source": "obra/superpowers",
   "sourceType": "git",
   "repoUrl": "https://github.com/obra/superpowers",
-  "subpath": "skills\\requesting-code-review",
-  "installedAt": "2026-03-15T19:23:02.453Z"
+  "subpath": "skills/requesting-code-review",
+  "sourceUrl": "https://github.com/obra/superpowers/tree/44c9b2d6e889982ac18c27d05a19fefe335194e1/skills/requesting-code-review",
+  "commit": "44c9b2d6e889982ac18c27d05a19fefe335194e1",
+  "installedAt": "2026-03-15T19:23:02.453Z",
+  "syncedAt": "2026-08-10T11:20:07.214Z"
 }

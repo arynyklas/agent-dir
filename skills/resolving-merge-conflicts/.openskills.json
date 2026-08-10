@@ -2,6 +2,9 @@
   "source": "mattpocock/skills",
   "sourceType": "git",
   "repoUrl": "https://github.com/mattpocock/skills",
-  "subpath": "skills\\engineering\\resolving-merge-conflicts",
-  "installedAt": "2026-07-14T11:33:04.879Z"
+  "subpath": "skills/engineering/resolving-merge-conflicts",
+  "sourceUrl": "https://github.com/mattpocock/skills/tree/84fdeffd12f2ee307994d1eb6feb48173b6e0502/skills/engineering/resolving-merge-conflicts",
+  "commit": "84fdeffd12f2ee307994d1eb6feb48173b6e0502",
+  "installedAt": "2026-07-14T11:33:04.879Z",
+  "syncedAt": "2026-08-10T11:20:07.214Z"
 }

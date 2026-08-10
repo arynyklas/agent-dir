@@ -2,6 +2,9 @@
   "source": "mattpocock/skills",
   "sourceType": "git",
   "repoUrl": "https://github.com/mattpocock/skills",
-  "subpath": "skills\\engineering\\improve-codebase-architecture",
-  "installedAt": "2026-07-14T11:30:36.186Z"
+  "subpath": "skills/engineering/improve-codebase-architecture",
+  "sourceUrl": "https://github.com/mattpocock/skills/tree/84fdeffd12f2ee307994d1eb6feb48173b6e0502/skills/engineering/improve-codebase-architecture",
+  "commit": "84fdeffd12f2ee307994d1eb6feb48173b6e0502",
+  "installedAt": "2026-07-14T11:30:36.186Z",
+  "syncedAt": "2026-08-10T11:20:07.214Z"
 }

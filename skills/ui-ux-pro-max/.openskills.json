@@ -1,0 +1,10 @@
+{
+  "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+  "sourceType": "git",
+  "repoUrl": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "subpath": ".claude/skills/ui-ux-pro-max",
+  "sourceUrl": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/abb7f2fd5a083fa1ff55c326a963ff0d95c33f99/.claude/skills/ui-ux-pro-max",
+  "commit": "abb7f2fd5a083fa1ff55c326a963ff0d95c33f99",
+  "installedAt": "2026-08-10T11:20:07.214Z",
+  "syncedAt": "2026-08-10T11:20:07.214Z"
+}

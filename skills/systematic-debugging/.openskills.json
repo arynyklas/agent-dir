@@ -2,6 +2,9 @@
   "source": "obra/superpowers",
   "sourceType": "git",
   "repoUrl": "https://github.com/obra/superpowers",
-  "subpath": "skills\\systematic-debugging",
-  "installedAt": "2026-03-15T19:23:02.459Z"
+  "subpath": "skills/systematic-debugging",
+  "sourceUrl": "https://github.com/obra/superpowers/tree/44c9b2d6e889982ac18c27d05a19fefe335194e1/skills/systematic-debugging",
+  "commit": "44c9b2d6e889982ac18c27d05a19fefe335194e1",
+  "installedAt": "2026-03-15T19:23:02.459Z",
+  "syncedAt": "2026-08-10T11:20:07.214Z"
 }

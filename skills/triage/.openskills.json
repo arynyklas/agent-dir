@@ -2,6 +2,9 @@
   "source": "mattpocock/skills",
   "sourceType": "git",
   "repoUrl": "https://github.com/mattpocock/skills",
-  "subpath": "skills\\engineering\\triage",
-  "installedAt": "2026-07-14T11:29:23.779Z"
+  "subpath": "skills/engineering/triage",
+  "sourceUrl": "https://github.com/mattpocock/skills/tree/84fdeffd12f2ee307994d1eb6feb48173b6e0502/skills/engineering/triage",
+  "commit": "84fdeffd12f2ee307994d1eb6feb48173b6e0502",
+  "installedAt": "2026-07-14T11:29:23.779Z",
+  "syncedAt": "2026-08-10T11:20:07.214Z"
 }

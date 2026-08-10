@@ -94,4 +94,12 @@ If either reviewer reports Critical or Important findings, fix them before proce
 - Push back only with code, tests, or source quotations proving the finding is wrong.
 - If a finding conflicts with the plan text, ask which governs before changing code.
 
+## Common rationalizations
+
+| Excuse | Reality |
+|--------|---------|
+| "I'll just review the diff myself instead of dispatching reviewers" | You are the coordinator. Reviewing the diff inline burns the context window you need to keep driving the work. Dispatch the reviewers: the diff and the evaluation live in their context, and only the findings come back to you. |
+| "The reviewers need my whole session history to understand the change" | Hand them precisely crafted context, never your session history. That keeps each reviewer on the work product, not your thought process. |
+| "Standards and Spec overlap, so one reviewer is enough" | Collapsing the axes lets style noise bury a missing requirement. Run both; keep the reports separate. |
+
 See [code-reviewer.md](code-reviewer.md) for reviewer prompt templates.

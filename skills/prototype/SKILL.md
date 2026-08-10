@@ -18,7 +18,7 @@ If ambiguous and the user is reachable, ask. If not, choose the branch that matc
 
 1. **Throwaway from day one.** Name and mark prototype files so a casual reader knows they are not production.
 2. **Use isolation when touching a Git repo.** Invoke `using-git-worktrees` before creating prototype files in a repository unless the existing workspace is already isolated or the user explicitly wants in-place exploration.
-3. **One command to run.** Use the project's existing task runner or print the exact command at the top of the prototype.
+3. **Trivial to run.** A UI prototype starts from one command in the project's existing task runner; a logic prototype is a single HTML file the user double-clicks. Print the exact command or path at the top of the prototype.
 4. **No persistence by default.** Use memory, scratch files, or scratch databases with an obvious prototype name.
 5. **Skip polish.** Prototype code does not require tests, broad error handling, or abstractions. It must be runnable, not production-ready.
 6. **Surface state.** After every logic action or UI variant switch, show the relevant state so the user can react.
