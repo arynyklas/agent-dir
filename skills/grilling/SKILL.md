@@ -5,9 +5,11 @@ description: Grill the user relentlessly about a plan, decision, or idea. Use wh
 
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
-Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
+Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round, each question carrying your recommended answer. Then wait for the user's answers before the next round.
 
-Each question should be formatted like so:
+Put the whole round to the user in **one `ask` tool call** whenever an `ask`-style interactive question tool is available — never as prose the user has to answer by hand. One `questions[]` entry per frontier question: `question` carries the title and body, `options` carries the choices, and `recommended` points at the answer you argue for. Set `multi` when several choices can co-exist. Never add an "Other" option; the tool supplies one.
+
+Only when no such tool exists, fall back to numbered questions in the transcript:
 
 ```
 ❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
