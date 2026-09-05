@@ -6,7 +6,7 @@ here — re-apply it after a sync.
 
 ## skills/grilling
 
-- Upstream: `mattpocock/skills` @ `84fdeffd12f2ee307994d1eb6feb48173b6e0502`, `skills/productivity/grilling`
+- Upstream: `mattpocock/skills` @ `3cca18b368ae95cdbdebbff572ccafa662551015`, `skills/productivity/grilling`
 - Patch (2026-08-12): each round MUST be delivered through the harness `ask` tool in a single
   call (one `questions[]` entry per frontier question, `recommended` = the answer we argue for);
   the upstream `❓ **Q1** … ➡️` markdown format is demoted to a fallback for harnesses with no

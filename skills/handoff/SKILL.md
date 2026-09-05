@@ -5,49 +5,12 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-# Handoff
+Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS - not the current workspace.
 
-Write a handoff document so a fresh agent can continue the work.
+Include a "suggested skills" section in the document, naming which skills the next agent should call the Skill tool for.
 
-## Destination
+Do not duplicate content already captured in other artifacts (specs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
 
-Save the artifact to:
+Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
 
-```text
-local://<slug>-handoff.md
-```
-
-Use a short kebab-case slug describing the next session's focus. Do not write handoffs into the repository unless the user explicitly asks.
-
-## Content
-
-Include:
-
-- current goal and user intent;
-- completed work with evidence;
-- current state and open decisions;
-- exact next actions;
-- verification already run and what remains;
-- risks, blockers, or assumptions;
-- links/paths to existing artifacts.
-
-If content already lives in a spec, plan, ADR, issue, PR, diff, report, or local artifact, reference that path or URL instead of duplicating it.
-
-## Redaction
-
-Redact secrets and sensitive personal data before writing:
-
-- API keys, tokens, passwords, cookies, private keys;
-- credentials or connection strings;
-- sensitive personal information;
-- private customer data not needed for continuation.
-
-Use `[REDACTED]` and state what kind of value was removed when helpful.
-
-## Suggested skills
-
-Include a “Suggested skills” section only with locally installed skill names that are relevant to the next session. Do not recommend unavailable upstream, personal, deprecated, or removed skills.
-
-## If arguments were passed
-
-Treat arguments as the next session's intended focus and tailor the handoff to that focus.
+If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.
